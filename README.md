@@ -7,3 +7,4 @@ Starting off in Python just to view the data for my own use, I will rewrite this
 ## Current Dependencies
 * Python 3.7+
 * uk_covid19 (available from link above)
+* [Seaborn](http://seaborn.pydata.org/index.html)
