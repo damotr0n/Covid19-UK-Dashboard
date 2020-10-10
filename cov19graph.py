@@ -1,5 +1,5 @@
 from uk_covid19 import Cov19API
-import json, seaborn, numpy, pandas, matplotlib.pyplot as plt
+import json, seaborn, numpy, pandas, matplotlib.pyplot as plt, matplotlib.dates as mdates
 
 # Fetches the data from the api
 def get_data_from_api():
@@ -36,13 +36,29 @@ def parse_data(input_data):
         del day["cumCases"]
         del day["dailyTests"]
         del day["cumTests"]
+        day["date"] = mdates.datestr2num(day["date"])
 
-    # return numpy.array(proc_data)
     return pandas.DataFrame(data)
 
 seaborn.set_theme(style="darkgrid")
 data = parse_data(get_data_from_api())
-plot = seaborn.relplot(data=data, x="date", y="dailyCasesAsPercTests",  kind="line")
-plot.fig.autofmt_xdate()
+data = data.sort_values("date")
+
+fig, ax = plt.subplots()
+
+# seaborn.barplot(x=data["date"], y=data["dailyCasesAsPercTests"], ax=ax)
+# seaborn.lineplot(x=data["date"], y=data["cumCasesAsPercTests"], ax=ax)
+
+ax.bar(data["date"], data["dailyCasesAsPercTests"], color="lightblue")
+ax.plot(data["date"], data["cumCasesAsPercTests"], color="red")
+
+locator = mdates.AutoDateLocator()
+formatter = mdates.ConciseDateFormatter(locator)
+ax.xaxis.set_major_locator(locator)
+ax.xaxis.set_major_formatter(formatter)
+
+plt.ylabel("Percentage of COVID-19 cases found positive")
+plt.xlabel("Date")
+ax.set_title("Daily and Cumulative percentage of UK COVID-19 cases found positive")
 
 plt.show()
